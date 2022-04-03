@@ -1,8 +1,7 @@
+from enum import Enum
+from math import copysign
+import random
 import pygame
-# from pygame import Vector2
-# from pygame.sprite import Sprite
-# from pygame.rect import Rect
-# from pygame import Surface
 import time
 import threading
 
@@ -12,6 +11,13 @@ BLUE = (0, 0, 255)
 SURFACE_COLOR = (0, 0, 0)
 WIDTH = 400
 HEIGHT = 400
+
+DIR = {
+    "UP": (0, -1),
+    "DOWN": (0, 1),
+    "RIGHT": (1, 0),
+    "LEFT": (-1, 0)
+}
 
 
 class GameCharacter(pygame.sprite.Sprite):
@@ -27,7 +33,6 @@ class GameCharacter(pygame.sprite.Sprite):
 
         self.dir = pygame.Vector2(0, 1)
         self.pos = pygame.Vector2(x, y)
-        self.pace = 1/100
 
         self.image = pygame.Surface([width, height])
         self.image.fill(SURFACE_COLOR)
@@ -40,21 +45,8 @@ class GameCharacter(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.update_img()
 
-    def set_dir_up(self):
-        self.dir.x = 0
-        self.dir.y = -1
-
-    def set_dir_down(self):
-        self.dir.x = 0
-        self.dir.y = 1
-
-    def set_dir_right(self):
-        self.dir.x = 1
-        self.dir.y = 0
-
-    def set_dir_left(self):
-        self.dir.x = -1
-        self.dir.y = 0
+    def set_dir(self, dir: tuple):
+        (self.dir.x, self.dir.y) = dir
 
     def update_img(self):
         self.rect.x = int(self.pos.x)
@@ -78,6 +70,7 @@ class GameCharacter(pygame.sprite.Sprite):
 class PacMan(GameCharacter):
     def __init__(self, x: int, y: int, width: int, height: int):
         super().__init__(x, y, width, height, YELLOW)
+        self.pace = 1/120
 
     def run(self):
         while True:
@@ -92,17 +85,32 @@ class Ghost(GameCharacter):
     def __init__(self, x: int, y: int, width: int, height: int, pac_man: PacMan):
         super().__init__(x, y, width, height, BLUE)
         self.pac_man = pac_man
+        self.pace = 1/80
 
     def follow_pac_man(self):
         dist = self.pos.distance_to(self.pac_man.pos)
 
-        if dist < 200:
-            pass
+        if dist < 100:
+            x_diff = self.pac_man.pos.x - self.pos.x
+            y_diff = self.pac_man.pos.y - self.pos.y
+
+            if abs(x_diff) > abs(y_diff):
+                self.dir.x = copysign(1, x_diff)
+                self.dir.y = 0
+            else:
+                self.dir.y = copysign(1, y_diff)
+                self.dir.x = 0
+
+    def random_turn(self):
+        if (random.random() < 0.01):
+            new_dir = random.choice(list(DIR.values()))
+            print(new_dir)
+            self.set_dir(new_dir)
 
     def run(self):
         while True:
             time.sleep(self.pace)
-
+            self.random_turn()
             self.follow_pac_man()
             self.move()
             self.update_img()
@@ -141,13 +149,13 @@ while game_on:
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        pac_man.set_dir_left()
+        pac_man.set_dir(DIR["LEFT"])
     if keys[pygame.K_RIGHT]:
-        pac_man.set_dir_right()
+        pac_man.set_dir(DIR["RIGHT"])
     if keys[pygame.K_DOWN]:
-        pac_man.set_dir_down()
+        pac_man.set_dir(DIR["DOWN"])
     if keys[pygame.K_UP]:
-        pac_man.set_dir_up()
+        pac_man.set_dir(DIR["UP"])
 
     all_sprites_list.update()
     screen.fill(SURFACE_COLOR)
