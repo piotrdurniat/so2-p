@@ -12,8 +12,8 @@ BLUE = (0, 0, 255)
 class Ghost(GameCharacter):
     pac_man: PacMan
 
-    def __init__(self, x: int, y: int, width: int, height: int, pac_man: PacMan):
-        super().__init__(x, y, width, height, BLUE)
+    def __init__(self, x: int, y: int, pac_man: PacMan):
+        super().__init__(x, y, BLUE)
         self.pac_man = pac_man
         self.pace = 1/80
 
@@ -25,17 +25,16 @@ class Ghost(GameCharacter):
             y_diff = self.pac_man.pos.y - self.pos.y
 
             if abs(x_diff) > abs(y_diff):
-                self.dir.x = copysign(1, x_diff)
-                self.dir.y = 0
+                new_dir = (copysign(1, x_diff), 0)
+                self.turn(new_dir)
             else:
-                self.dir.y = copysign(1, y_diff)
-                self.dir.x = 0
+                new_dir = (0, copysign(1, y_diff))
+                self.turn(new_dir)
 
     def random_turn(self):
         if (random.random() < 0.01):
             new_dir = random.choice(list(DIR.values()))
-            print(new_dir)
-            self.set_dir(new_dir)
+            self.turn(new_dir)
 
     def run(self):
         while True:
