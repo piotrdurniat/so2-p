@@ -1,22 +1,28 @@
 import pygame
+import time
 
 from config import CELL_W, HEIGHT, SURFACE_COLOR, WIDTH
+import main
 
 
 class GameCharacter(pygame.sprite.Sprite):
     # time between movement of 1 pixel
     pace: float
     dir: pygame.Vector2
+    start_pos: tuple
     pos: pygame.Vector2
     rect: pygame.rect.Rect
+
     next_dir: tuple
 
-    def __init__(self, x: int, y: int, color):
+    def __init__(self, game: main.Game, x: int, y: int, color):
         super().__init__()
-
-        self.dir = pygame.Vector2(0, 1)
+        self.game = game
+        self.dir = pygame.Vector2()
         self.next_dir = (0, 0)
-        self.pos = pygame.Vector2(x * CELL_W, y * CELL_W)
+        self.start_pos = (x * CELL_W, y * CELL_W)
+        self.pos = pygame.Vector2()
+        self.reset_pos()
 
         self.image = pygame.Surface([CELL_W, CELL_W])
         self.image.fill(SURFACE_COLOR)
@@ -28,6 +34,9 @@ class GameCharacter(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
         self.update_img()
+
+    def set_dir(self, dir: tuple):
+        self.dir.x, self.dir.y = dir
 
     def turn(self, dir: tuple):
         self.next_dir = dir
@@ -56,3 +65,16 @@ class GameCharacter(pygame.sprite.Sprite):
             self.pos.y -= HEIGHT
         elif self.pos.y < 0:
             self.pos.y += HEIGHT
+
+    def update_state(self):
+        self.move()
+        self.update_img()
+
+    def reset_pos(self):
+        self.pos.x, self.pos.y = self.start_pos
+
+    def run(self):
+        while True:
+            if self.game.paused == False:
+                time.sleep(self.pace)
+                self.update_state()

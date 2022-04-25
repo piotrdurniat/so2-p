@@ -1,10 +1,11 @@
+from config import CELL_W, DIR
+from pac_man import PacMan
 import random
 import time
 from math import copysign
 
 from game_character import GameCharacter
-from pac_man import PacMan
-from config import DIR
+import main
 
 BLUE = (0, 0, 255)
 
@@ -12,10 +13,16 @@ BLUE = (0, 0, 255)
 class Ghost(GameCharacter):
     pac_man: PacMan
 
-    def __init__(self, x: int, y: int, pac_man: PacMan):
-        super().__init__(x, y, BLUE)
+    def __init__(self, game: main.Game, x: int, y: int, pac_man: PacMan):
+        super().__init__(game, x, y, BLUE)
         self.pac_man = pac_man
         self.pace = 1/80
+        self.set_dir(self.get_random_dir())
+
+    def eat_pac_man(self):
+        dist = self.pos.distance_to(self.pac_man.pos)
+        if dist < CELL_W:
+            self.game.decr_live_count()
 
     def follow_pac_man(self):
         dist = self.pos.distance_to(self.pac_man.pos)
@@ -31,15 +38,16 @@ class Ghost(GameCharacter):
                 new_dir = (0, copysign(1, y_diff))
                 self.turn(new_dir)
 
+    def get_random_dir(self):
+        return random.choice(list(DIR.values()))
+
     def random_turn(self):
         if (random.random() < 0.01):
-            new_dir = random.choice(list(DIR.values()))
+            new_dir = self.get_random_dir()
             self.turn(new_dir)
 
-    def run(self):
-        while True:
-            time.sleep(self.pace)
-            self.random_turn()
-            self.follow_pac_man()
-            self.move()
-            self.update_img()
+    def update_state(self):
+        self.random_turn()
+        self.follow_pac_man()
+        self.eat_pac_man()
+        super().update_state()
