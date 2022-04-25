@@ -1,6 +1,6 @@
-COLS = 17
-ROWS = 17
-CELL_W = 25
+COLS = 19
+ROWS = 22
+CELL_W = 26
 WIDTH = COLS * CELL_W
 HEIGHT = ROWS * CELL_W
 SURFACE_COLOR = (0, 0, 0)
@@ -10,3 +10,6 @@ DIR = {
     "RIGHT": (1, 0),
     "LEFT": (-1, 0)
 }
+
+BOARD_WALL = 1
+BOARD_POINT = 2

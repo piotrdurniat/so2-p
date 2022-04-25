@@ -1,7 +1,8 @@
+from math import ceil, floor
 import pygame
 import time
 
-from config import CELL_W, HEIGHT, SURFACE_COLOR, WIDTH
+from config import CELL_W, COLS, HEIGHT, ROWS, SURFACE_COLOR, WIDTH
 import main
 
 
@@ -19,7 +20,7 @@ class GameCharacter(pygame.sprite.Sprite):
         super().__init__()
         self.game = game
         self.dir = pygame.Vector2()
-        self.next_dir = (0, 0)
+        self.next_dir = (-1, -1)
         self.start_pos = (x * CELL_W, y * CELL_W)
         self.pos = pygame.Vector2()
         self.reset_pos()
@@ -48,10 +49,23 @@ class GameCharacter(pygame.sprite.Sprite):
     def in_cell_center(self):
         return self.pos.x % CELL_W == 0 and self.pos.y % CELL_W == 0
 
+    def cell_free(self, i: int, j: int) -> bool:
+        if i >= 0 and i <= COLS and j >= 0 and j <= ROWS:
+            return self.game.board[j][i] != 1
+
+        return True
+
     def move(self):
-        if self.in_cell_center() and self.next_dir != (0, 0):
-            self.dir.x, self.dir.y = self.next_dir
-            self.next_dir = (0, 0)
+
+        if self.next_dir != (-1, -1):
+
+            if self.dir.x == -self.next_dir[0] and self.dir.y == -self.next_dir[1]:
+                self.dir.x, self.dir.y = self.next_dir
+                self.next_dir = (-1, -1)
+
+            elif self.in_cell_center():
+                self.dir.x, self.dir.y = self.next_dir
+                self.next_dir = (-1, -1)
 
         self.pos.x += self.dir.x
         self.pos.y += self.dir.y
