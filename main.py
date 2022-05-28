@@ -6,6 +6,7 @@ import time
 from config import BOARD_POINT, BOARD_WALL, CELL_W, COLS, HEIGHT, ROWS, WIDTH, SURFACE_COLOR, DIR
 import ghost
 import pac_man
+import hud
 
 
 class Game:
@@ -36,6 +37,8 @@ class Game:
         self.the_pac_man = pac_man.PacMan(self, 9, 16, DIR["LEFT"])
         self.ghost1 = ghost.Ghost(self, 9, 10, self.the_pac_man)
         self.ghost2 = ghost.Ghost(self, 10, 10, self.the_pac_man)
+
+        self.hud = hud.Hud(screen)
 
         all_sprites_list.add(self.the_pac_man)
         all_sprites_list.add(self.ghost1)
@@ -74,6 +77,16 @@ class Game:
             screen.fill(SURFACE_COLOR)
             self.draw_board(screen)
             all_sprites_list.draw(screen)
+
+            if self.paused:
+                if self.live_count > 0:
+                    self.hud.center_text("Get ready")
+                else:
+                    self.hud.center_text("Game over")
+
+            self.hud.show_point_count(self.point_count)
+            self.hud.show_live_count(self.live_count)
+
             pygame.display.flip()
             clock.tick(60)
 
@@ -83,10 +96,9 @@ class Game:
         with self._live_lock:
             self.pause()
             self.live_count -= 1
-            print("live_count: ", self.live_count)
             self.decr_point_count(10)
 
-            if self.live_count == 0:
+            if self.live_count <= 0:
                 self.end_game()
                 return
 
@@ -99,16 +111,14 @@ class Game:
     def decr_point_count(self, points):
         with self._point_lock:
             self.point_count -= points
-            print("point_count: ", self.point_count)
 
     def incr_point_count(self, points):
         with self._point_lock:
             self.point_count += points
-            print("point_count: ", self.point_count)
 
     def end_game(self):
-        self.paused = True
-        print("Game over")
+        self.pause()
+        self.hud.center_text("Game over")
 
     def pause(self):
         self.paused = True
@@ -139,8 +149,7 @@ class Game:
             [1, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1],
             [1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1],
             [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
 
     def draw_board(self, surface):
@@ -152,15 +161,19 @@ class Game:
                 x = i * CELL_W
                 y = j * CELL_W
 
-                if (self.board[j][i] == BOARD_WALL):
-                    pygame.draw.rect(surface,
-                                     WALL_COLOR,
-                                     pygame.Rect(x, y, CELL_W, CELL_W))
-                if (self.board[j][i] == BOARD_POINT):
-                    pygame.draw.circle(surface,
-                                       POINT_COLOR,
-                                       (x + CELL_W // 2, y + CELL_W // 2),
-                                       CELL_W // 6)
+                if self.board[j][i] == BOARD_WALL:
+                    pygame.draw.rect(
+                        surface,
+                        WALL_COLOR,
+                        pygame.Rect(x, y, CELL_W, CELL_W)
+                    )
+                if self.board[j][i] == BOARD_POINT:
+                    pygame.draw.circle(
+                        surface,
+                        POINT_COLOR,
+                        (x + CELL_W // 2, y + CELL_W // 2),
+                        CELL_W // 6
+                    )
 
 
 if __name__ == "__main__":
