@@ -1,22 +1,22 @@
 import random
-from config import CELL_W, DIR
-from pac_man import PacMan
+import pygame
 from numpy import sign
 
+from pac_man import PacMan
+from config import CELL_W, DIR
 from game_character import GameCharacter
 import main
-
-COLOR = (200, 0, 200)
 
 
 class Ghost(GameCharacter):
     pac_man: PacMan
 
-    def __init__(self, game: main.Game, x: int, y: int, pac_man: PacMan):
+    def __init__(self, game: main.Game, x: int, y: int, pac_man: PacMan, img: pygame.surface.Surface):
         dir = self.get_random_dir()
-        super().__init__(game, x, y, COLOR, dir)
+        super().__init__(game, x, y, dir, img)
         self.pac_man = pac_man
         self.pace = 1/80
+        self.img = img
 
     def eat_pac_man(self):
         dist = self.pos.distance_to(self.pac_man.pos)

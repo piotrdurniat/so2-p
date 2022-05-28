@@ -2,7 +2,7 @@ import pygame
 import time
 import threading
 
-from config import CELL_W, COLS, HEIGHT, ROWS, SURFACE_COLOR, WIDTH
+from config import CELL_W, COLS, HEIGHT, ROWS, WIDTH
 import main
 
 
@@ -16,8 +16,9 @@ class GameCharacter(pygame.sprite.Sprite):
     pos: pygame.Vector2
     rect: pygame.rect.Rect
     _live_lock: threading.Lock
+    img: pygame.surface.Surface
 
-    def __init__(self, game: main.Game, x: int, y: int, color, dir: tuple):
+    def __init__(self, game: main.Game, x: int, y: int, dir: tuple, img: pygame.surface.Surface):
         super().__init__()
         self._turn_lock = threading.Lock()
 
@@ -29,14 +30,7 @@ class GameCharacter(pygame.sprite.Sprite):
         self.reset_pos()
 
         self.image = pygame.Surface([CELL_W, CELL_W])
-        self.image.fill(SURFACE_COLOR)
-        # self.image.set_colorkey(COLOR)
-
-        pygame.draw.rect(
-            self.image,
-            color,
-            pygame.rect.Rect(0, 0, CELL_W, CELL_W)
-        )
+        self.image.blit(pygame.transform.scale(img, (CELL_W, CELL_W)), (0, 0))
 
         self.rect = self.image.get_rect()
         self.update_img()

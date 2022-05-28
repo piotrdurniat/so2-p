@@ -16,6 +16,7 @@ class Game:
     point_count: int
     paused: bool
     board: list
+    ghosts: list
 
     def __init__(self):
         self._live_lock = threading.Lock()
@@ -23,36 +24,46 @@ class Game:
         self.live_count = 3
         self.point_count = 100
         self.paused = False
-
         self.init_board()
 
         pygame.init()
         size = (WIDTH, HEIGHT)
         screen = pygame.display.set_mode(size)
-
         pygame.display.set_caption("Pac-Man")
 
         all_sprites_list = pygame.sprite.Group()
 
-        self.the_pac_man = pac_man.PacMan(self, 9, 16, DIR["LEFT"])
-        self.ghost1 = ghost.Ghost(self, 9, 10, self.the_pac_man)
-        self.ghost2 = ghost.Ghost(self, 10, 10, self.the_pac_man)
+        ghost_red_img, ghost_cyan_img, ghost_magenta_img, ghost_orange_img = self.load_images()
 
+        self.the_pac_man = pac_man.PacMan(
+            self, 9, 16, DIR["LEFT"], ghost_magenta_img
+        )
+        ghost_red = ghost.Ghost(
+            self, 9, 10, self.the_pac_man, ghost_red_img
+        )
+        ghost_cyan = ghost.Ghost(
+            self, 10, 10, self.the_pac_man, ghost_cyan_img
+        )
+        ghost_magenta = ghost.Ghost(
+            self, 10, 10, self.the_pac_man, ghost_magenta_img
+        )
+        ghost_orange = ghost.Ghost(
+            self, 10, 10, self.the_pac_man, ghost_orange_img
+        )
+
+        self.ghosts = [ghost_red, ghost_cyan, ghost_magenta, ghost_orange]
         self.hud = hud.Hud(screen)
 
         all_sprites_list.add(self.the_pac_man)
-        all_sprites_list.add(self.ghost1)
-        all_sprites_list.add(self.ghost2)
+        for ghost_sprite in self.ghosts:
+            all_sprites_list.add(ghost_sprite)
+
+        # Staring threads for sprites:
+        threading.Thread(target=self.the_pac_man.run).start()
+        for ghost_sprite in self.ghosts:
+            threading.Thread(target=ghost_sprite.run).start()
 
         clock = pygame.time.Clock()
-
-        pac_man_thread = threading.Thread(target=self.the_pac_man.run)
-        ghost_thread = threading.Thread(target=self.ghost1.run)
-        ghost2_thread = threading.Thread(target=self.ghost2.run)
-
-        pac_man_thread.start()
-        ghost_thread.start()
-        ghost2_thread.start()
 
         game_on = True
         while game_on:
@@ -92,6 +103,14 @@ class Game:
 
         pygame.quit()
 
+    def load_images(self) -> tuple:
+        ghost_red = pygame.image.load('assets/ghost-red.png')
+        ghost_cyan = pygame.image.load('assets/ghost-cyan.png')
+        ghost_magenta = pygame.image.load('assets/ghost-magenta.png')
+        ghost_orange = pygame.image.load('assets/ghost-orange.png')
+
+        return (ghost_red, ghost_cyan, ghost_magenta, ghost_orange)
+
     def decr_live_count(self):
         with self._live_lock:
             self.pause()
@@ -105,8 +124,9 @@ class Game:
             time.sleep(2)
             self.resume()
             self.the_pac_man.reset_pos()
-            self.ghost1.reset_pos()
-            self.ghost2.reset_pos()
+
+            for ghost in self.ghosts:
+                ghost.reset_pos()
 
     def decr_point_count(self, points):
         with self._point_lock:

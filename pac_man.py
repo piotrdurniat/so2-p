@@ -1,14 +1,15 @@
+import pygame
+
 from config import BOARD_POINT, CELL_W, COLS, ROWS
 import main
 from game_character import GameCharacter
-YELLOW = (255, 255, 0)
 
 
 class PacMan(GameCharacter):
     game: main.Game
 
-    def __init__(self, game: main.Game,  x: int, y: int, dir: tuple):
-        super().__init__(game, x, y, YELLOW, dir)
+    def __init__(self, game: main.Game,  x: int, y: int, dir: tuple, img: pygame.surface.Surface):
+        super().__init__(game, x, y, dir, img)
         self.pace = 1/120
 
     def collect_points(self):
