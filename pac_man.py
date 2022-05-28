@@ -1,5 +1,4 @@
-import time
-from config import BOARD_POINT, CELL_W, COLS, DIR, ROWS
+from config import BOARD_POINT, CELL_W, COLS, ROWS
 import main
 from game_character import GameCharacter
 YELLOW = (255, 255, 0)
@@ -8,21 +7,16 @@ YELLOW = (255, 255, 0)
 class PacMan(GameCharacter):
     game: main.Game
 
-    def __init__(self, game: main.Game,  x: int, y: int):
-        dir = DIR['UP']
+    def __init__(self, game: main.Game,  x: int, y: int, dir: tuple):
         super().__init__(game, x, y, YELLOW, dir)
         self.pace = 1/120
 
     def collect_points(self):
-        i = self.pos.x / CELL_W
-        j = self.pos.y / CELL_W
+        if self.in_cell_center():
+            i = (int(self.pos.x) // CELL_W) % COLS
+            j = (int(self.pos.y) // CELL_W) % ROWS
 
-        if i.is_integer() and j.is_integer():
-
-            i = int(i)
-            j = int(j)
-
-            if i >= 0 and i < COLS and j >= 0 and j < ROWS and self.game.board[j][i] == BOARD_POINT:
+            if self.game.board[j][i] == BOARD_POINT:
                 self.game.board[j][i] = 0
                 self.game.incr_point_count(20)
 

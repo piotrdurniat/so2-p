@@ -1,8 +1,7 @@
+import random
 from config import CELL_W, DIR
 from pac_man import PacMan
-import random
-import time
-from math import copysign
+from numpy import sign
 
 from game_character import GameCharacter
 import main
@@ -32,10 +31,10 @@ class Ghost(GameCharacter):
             y_diff = self.pac_man.pos.y - self.pos.y
 
             if abs(x_diff) > abs(y_diff):
-                new_dir = (copysign(1, x_diff), 0)
+                new_dir = (sign(x_diff), 0)
                 self.turn(new_dir)
             else:
-                new_dir = (0, copysign(1, y_diff))
+                new_dir = (0, sign(y_diff))
                 self.turn(new_dir)
 
     def get_random_dir(self):

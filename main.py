@@ -33,7 +33,7 @@ class Game:
 
         all_sprites_list = pygame.sprite.Group()
 
-        self.the_pac_man = pac_man.PacMan(self, 6, 16)
+        self.the_pac_man = pac_man.PacMan(self, 9, 16, DIR["LEFT"])
         self.ghost1 = ghost.Ghost(self, 9, 10, self.the_pac_man)
         self.ghost2 = ghost.Ghost(self, 10, 10, self.the_pac_man)
 
