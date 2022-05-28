@@ -9,18 +9,18 @@ import main
 class GameCharacter(pygame.sprite.Sprite):
     # time between movement of 1 pixel
     pace: float
+
     dir: pygame.Vector2
+    next_dir: pygame.Vector2
     start_pos: tuple
     pos: pygame.Vector2
     rect: pygame.rect.Rect
 
-    next_dir: tuple
-
-    def __init__(self, game: main.Game, x: int, y: int, color):
+    def __init__(self, game: main.Game, x: int, y: int, color, dir: tuple):
         super().__init__()
         self.game = game
-        self.dir = pygame.Vector2()
-        self.next_dir = (-1, -1)
+        self.dir = pygame.Vector2(dir[0], dir[1])
+        self.next_dir = pygame.Vector2(dir[0], dir[1])
         self.start_pos = (x * CELL_W, y * CELL_W)
         self.pos = pygame.Vector2()
         self.reset_pos()
@@ -36,11 +36,8 @@ class GameCharacter(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.update_img()
 
-    def set_dir(self, dir: tuple):
-        self.dir.x, self.dir.y = dir
-
     def turn(self, dir: tuple):
-        self.next_dir = dir
+        self.next_dir.update(dir[0], dir[1])
 
     def update_img(self):
         self.rect.x = int(self.pos.x)
@@ -57,15 +54,19 @@ class GameCharacter(pygame.sprite.Sprite):
 
     def move(self):
 
-        if self.next_dir != (-1, -1):
+        # if next_dir is not the same as current dir
+        if self.next_dir.x != self.dir.x or self.next_dir.y != self.dir.y:
 
-            if self.dir.x == -self.next_dir[0] and self.dir.y == -self.next_dir[1]:
-                self.dir.x, self.dir.y = self.next_dir
-                self.next_dir = (-1, -1)
+           # Turing back happens immediately
+            if self.dir.x == -self.next_dir.x and self.dir.y == -self.next_dir.y:
+                self.dir.update(self.next_dir.x, self.next_dir.y)
+                self.next_dir.update(self.dir.x, self.dir.y)
 
+            # Turing to either side can only occur in the cell center
             elif self.in_cell_center():
-                self.dir.x, self.dir.y = self.next_dir
-                self.next_dir = (-1, -1)
+
+                self.dir.update(self.next_dir.x, self.next_dir.y)
+                self.next_dir.update(self.dir.x, self.dir.y)
 
         self.pos.x += self.dir.x
         self.pos.y += self.dir.y

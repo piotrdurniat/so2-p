@@ -7,17 +7,17 @@ from math import copysign
 from game_character import GameCharacter
 import main
 
-BLUE = (0, 0, 255)
+COLOR = (200, 0, 200)
 
 
 class Ghost(GameCharacter):
     pac_man: PacMan
 
     def __init__(self, game: main.Game, x: int, y: int, pac_man: PacMan):
-        super().__init__(game, x, y, BLUE)
+        dir = self.get_random_dir()
+        super().__init__(game, x, y, COLOR, dir)
         self.pac_man = pac_man
         self.pace = 1/80
-        self.set_dir(self.get_random_dir())
 
     def eat_pac_man(self):
         dist = self.pos.distance_to(self.pac_man.pos)

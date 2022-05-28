@@ -9,9 +9,9 @@ class PacMan(GameCharacter):
     game: main.Game
 
     def __init__(self, game: main.Game,  x: int, y: int):
-        super().__init__(game, x, y, YELLOW)
+        dir = DIR['UP']
+        super().__init__(game, x, y, YELLOW, dir)
         self.pace = 1/120
-        self.set_dir(DIR["UP"])
 
     def collect_points(self):
         i = self.pos.x / CELL_W
