@@ -1,5 +1,9 @@
 # Pac-Man
 
+## Powód dla którego wybrano taki temat
+
+Jako cel projektu wybrana została implementacja gry "Pac-Man". Ta gra została wybrana ze względu na jej dużą popularność oraz występowanie w niej kilku niezależnych postaci które wchodzą ze sobą w interakcje, co pozwoliło na wykorzystanie wielowątkowości oraz sekcji krytycznych.
+
 ## Zrzut ekranu
 
 ![Zrzut ekranu](./252761.png)
@@ -27,7 +31,3 @@ Aktualna liczba żyć oraz liczba punktów gracza zapisane są na dole planszy.
 - `_life_lock` w klasie `Game` - zapobiega występowaniu zjawiska hazardu w funkcji zmniejszającej liczbę żyć,
 - `_point_lock` w klasie `Game` - zapobiega występowaniu zjawiska hazardu w funkcji zwiększającej liczbę punktów,
 - `_turn_lock` w klasie `GameCharacter` - przeciwdziała występowaniu zjawiska hazardu w funkcji przetwarzającej wciśnięte klawisze i funkcji przetwarzającej kolizje postaci z ścianami.
-
-## Powód dla którego wybrano taki temat
-
-Jako cel projektu wybrana została implementacja gry "Pac-Man". Ta gra została wybrana ze względu na jej dużą popularność oraz występowanie w niej kilku niezależnych postaci które wchodzą ze sobą w interakcje, co pozwoliło na wykorzystanie wielowątkowości oraz sekcji krytycznych.
