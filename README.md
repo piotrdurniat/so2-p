@@ -1,5 +1,5 @@
 # Pac-Man
 
-## Dlaczego taki pomysł na projekt?
+## Powód dla którego wybrano taki temat
 
-Jako cel projektu wybrana została implementacja gry "Pac-Man". Ten wybór został podjęty ze względu na popularność tej gry, przykuwającą wzrok kolorystykę, przełomową mechanikę, intrygującą ścieżkę dźwiękową i niebagatelną myśl przewodnią.
+Jako cel projektu wybrana została implementacja gry "Pac-Man". Ta gra została wybrana ze względu na jej dużą popularność oraz występowanie w niej kilku niezależnych postaci, które wchodzą ze sobą w interakcje co pozwoliło na wykorzystanie wielowątkowości oraz sekcji krytycznych.
