@@ -11,9 +11,9 @@ import hud
 
 
 class Game:
-    _live_lock: threading.Lock
+    _life_lock: threading.Lock
     _point_lock: threading.Lock
-    live_count: int
+    life_count: int
     point_count: int
     paused: bool
     board: List[List[int]]
@@ -21,9 +21,9 @@ class Game:
     sprite_group: pygame.sprite.Group
 
     def __init__(self):
-        self._live_lock = threading.Lock()
+        self._life_lock = threading.Lock()
         self._point_lock = threading.Lock()
-        self.live_count = 3
+        self.life_count = 3
         self.point_count = 0
         self.paused = False
         self.init_board()
@@ -113,13 +113,13 @@ class Game:
 
         # Draw HUD
         if self.paused:
-            if self.live_count > 0:
+            if self.life_count > 0:
                 self.hud.center_text("Get ready")
             else:
                 self.hud.center_text("Game over")
 
         self.hud.show_point_count(self.point_count)
-        self.hud.show_live_count(self.live_count)
+        self.hud.show_live_count(self.life_count)
 
         pygame.display.flip()
 
@@ -135,10 +135,10 @@ class Game:
         return (ghost_red, ghost_cyan, ghost_magenta, ghost_orange, [pac_man_img_1, pac_man_img_2, pac_man_img_3])
 
     def decr_live_count(self):
-        with self._live_lock:
-            self.live_count -= 1
+        with self._life_lock:
+            self.life_count -= 1
 
-            if self.live_count <= 0:
+            if self.life_count <= 0:
                 self.end_game()
                 return
 

@@ -15,7 +15,7 @@ class GameCharacter(pygame.sprite.Sprite):
     start_pos: tuple
     pos: pygame.Vector2
     rect: pygame.rect.Rect
-    _live_lock: threading.Lock
+    _turn_lock: threading.Lock
     image: pygame.surface.Surface
     paused: bool
 
