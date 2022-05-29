@@ -41,7 +41,7 @@ class Ghost(GameCharacter):
         return random.choice(list(config.DIR.values()))
 
     def random_turn(self):
-        if (random.random() < 0.01):
+        if (self.dir.x == 0 and self.dir.y == 0) or (random.random() < 0.016):
             new_dir = self.get_random_dir()
             self.turn(new_dir)
 

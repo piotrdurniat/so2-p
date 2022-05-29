@@ -24,7 +24,7 @@ class Game:
         self._live_lock = threading.Lock()
         self._point_lock = threading.Lock()
         self.live_count = 3
-        self.point_count = 100
+        self.point_count = 0
         self.paused = False
         self.init_board()
         self.sprites = list()

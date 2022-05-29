@@ -28,7 +28,7 @@ class PacMan(GameCharacter):
 
             if self.game.board[j][i] == config.BOARD_POINT:
                 self.game.board[j][i] = 0
-                self.game.incr_point_count(20)
+                self.game.incr_point_count(1)
 
     def update_animation(self):
         self.img_index += 1
