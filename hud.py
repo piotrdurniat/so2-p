@@ -18,7 +18,8 @@ class Hud:
         y = self.screen.get_height() // 2
 
         text_surface = self.center_font.render(
-            text, True, (255, 255, 255))
+            text, True, (255, 255, 255)
+        )
         text_rect = text_surface.get_rect(center=(x, y))
 
         self.screen.blit(text_surface, text_rect)
@@ -28,7 +29,8 @@ class Hud:
         y = CELL_W * (ROWS - 1 + 0.25)
 
         text_surface = self.count_font.render(
-            f"Lives: {live_count}", True, (255, 255, 255))
+            f"Lives: {live_count}", True, (255, 255, 255)
+        )
         self.screen.blit(text_surface, (x, y))
 
     def show_point_count(self, point_count: int):
@@ -36,5 +38,6 @@ class Hud:
         y = CELL_W * (ROWS - 1 + 0.25)
 
         text_surface = self.count_font.render(
-            f"Points: {point_count}", True, (255, 255, 255))
+            f"Points: {point_count}", True, (255, 255, 255)
+        )
         self.screen.blit(text_surface, (x, y))

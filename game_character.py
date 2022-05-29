@@ -2,7 +2,7 @@ import pygame
 import time
 import threading
 
-from config import CELL_W, COLS, HEIGHT, ROWS, WIDTH
+import config
 import main
 
 
@@ -16,7 +16,8 @@ class GameCharacter(pygame.sprite.Sprite):
     pos: pygame.Vector2
     rect: pygame.rect.Rect
     _live_lock: threading.Lock
-    img: pygame.surface.Surface
+    image: pygame.surface.Surface
+    paused: bool
 
     def __init__(self, game: main.Game, x: int, y: int, dir: tuple, img: pygame.surface.Surface):
         super().__init__()
@@ -25,15 +26,21 @@ class GameCharacter(pygame.sprite.Sprite):
         self.game = game
         self.dir = pygame.Vector2(dir[0], dir[1])
         self.next_dir = pygame.Vector2(dir[0], dir[1])
-        self.start_pos = (x * CELL_W, y * CELL_W)
+        self.start_pos = (x * config.CELL_W, y * config.CELL_W)
         self.pos = pygame.Vector2()
         self.reset_pos()
 
-        self.image = pygame.Surface([CELL_W, CELL_W])
-        self.image.blit(pygame.transform.scale(img, (CELL_W, CELL_W)), (0, 0))
+        self.image = pygame.transform.scale(
+            img, (config.CELL_W, config.CELL_W)
+        )
+
+        # self.image = pygame.Surface([config.CELL_W, config.CELL_W])
+        # self.image.blit(pygame.transform.scale(
+        #     img, (config.CELL_W, config.CELL_W)), (0, 0))
 
         self.rect = self.image.get_rect()
         self.update_img()
+        self.paused = False
 
     def turn(self, dir: tuple):
         with self._turn_lock:
@@ -44,16 +51,16 @@ class GameCharacter(pygame.sprite.Sprite):
         self.rect.y = int(self.pos.y)
 
     def in_cell_center(self):
-        return self.pos.x % CELL_W == 0 and self.pos.y % CELL_W == 0
+        return self.pos.x % config.CELL_W == 0 and self.pos.y % config.CELL_W == 0
 
     def cell_free(self, i: int, j: int) -> bool:
-        if i >= 0 and i < COLS and j >= 0 and j < ROWS:
+        if i >= 0 and i < config.COLS and j >= 0 and j < config.ROWS:
             return self.game.board[j][i] != 1
         return True
 
     def next_cell_free(self):
-        x = int(self.pos.x) // CELL_W + int(self.next_dir.x)
-        y = int(self.pos.y) // CELL_W + int(self.next_dir.y)
+        x = int(self.pos.x) // config.CELL_W + int(self.next_dir.x)
+        y = int(self.pos.y) // config.CELL_W + int(self.next_dir.y)
         return self.cell_free(x, y)
 
     def opposite_vectors(self, vec1: pygame.Vector2, vec2: pygame.Vector2):
@@ -86,25 +93,31 @@ class GameCharacter(pygame.sprite.Sprite):
             self.pos.x += self.dir.x
             self.pos.y += self.dir.y
 
-            if self.pos.x > WIDTH:
-                self.pos.x -= WIDTH
+            if self.pos.x > config.WIDTH:
+                self.pos.x -= config.WIDTH
             elif self.pos.x < 0:
-                self.pos.x += WIDTH
+                self.pos.x += config.WIDTH
 
-            if self.pos.y > HEIGHT:
-                self.pos.y -= HEIGHT
+            if self.pos.y > config.HEIGHT:
+                self.pos.y -= config.HEIGHT
             elif self.pos.y < 0:
-                self.pos.y += HEIGHT
+                self.pos.y += config.HEIGHT
 
     def update_state(self):
-        self.move()
+        if not self.paused:
+            self.move()
         self.update_img()
 
     def reset_pos(self):
         self.pos.x, self.pos.y = self.start_pos
 
+    def pause(self):
+        self.paused = True
+
+    def resume(self):
+        self.paused = False
+
     def run(self):
         while True:
-            if self.game.paused == False:
-                time.sleep(self.pace)
-                self.update_state()
+            time.sleep(self.pace)
+            self.update_state()

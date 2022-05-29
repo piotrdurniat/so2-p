@@ -3,7 +3,7 @@ import pygame
 from numpy import sign
 
 from pac_man import PacMan
-from config import CELL_W, DIR
+import config
 from game_character import GameCharacter
 import main
 
@@ -20,7 +20,7 @@ class Ghost(GameCharacter):
 
     def eat_pac_man(self):
         dist = self.pos.distance_to(self.pac_man.pos)
-        if dist < CELL_W:
+        if dist < config.CELL_W and not self.paused:
             self.game.decr_live_count()
 
     def follow_pac_man(self):
@@ -38,7 +38,7 @@ class Ghost(GameCharacter):
                 self.turn(new_dir)
 
     def get_random_dir(self):
-        return random.choice(list(DIR.values()))
+        return random.choice(list(config.DIR.values()))
 
     def random_turn(self):
         if (random.random() < 0.01):
